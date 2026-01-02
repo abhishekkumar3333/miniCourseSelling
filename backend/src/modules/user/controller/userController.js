@@ -1,10 +1,14 @@
 import prisma from "../../../utils/prisma.js";
-import generateToken from "../../../core/auth/jwt.js";
+import {generateToken}from "../../../core/auth/jwt.js";
 import {
   loginUserValidator,
   registerUserValidator,
 } from "../validators/userValidation.js";
-import { UnauthorizedError } from "../../../core/errors/appErrors.jsx";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../../../core/errors/appErrors.js";
 
 export const registerUser = async (req, res) => {
   const validation = registerUserValidator(req.body);
@@ -20,7 +24,7 @@ export const registerUser = async (req, res) => {
     },
   });
   if (ExistingUser) {
-    throw new UnauthorizedError("User already exists");
+    throw new BadRequestError("User already exists");
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.user.create({
@@ -49,7 +53,7 @@ export const loginUser = async (req, res) => {
     },
   });
   if (!user) {
-    throw new UnauthorizedError("User not found");
+    throw new NotFoundError("User not found");
   }
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
