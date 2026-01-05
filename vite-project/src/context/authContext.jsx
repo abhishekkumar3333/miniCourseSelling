@@ -1,12 +1,22 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import api from "../lib/api.js";
 
 export const AuthContext = createContext(null);
 
 const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const token = localStorage.getItem("authToken");
+    return token ? { token } : null;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token && !user) {
+      setUser({ token });
+    }
+  }, []);
 
   const register = async (userData) => {
     setLoading(true);
