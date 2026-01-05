@@ -1,5 +1,6 @@
 import prisma from "../../../utils/prisma.js";
-import {generateToken}from "../../../core/auth/jwt.js";
+import { generateToken } from "../../../core/auth/jwt.js";
+import bcrypt from "bcrypt";
 import {
   loginUserValidator,
   registerUserValidator,
@@ -12,12 +13,13 @@ import {
 
 export const registerUser = async (req, res) => {
   const validation = registerUserValidator(req.body);
-  if (!validation) {
+  console.log(validation);
+  if (!validation.success) {
     throw new UnauthorizedError("Invalid data");
   }
 
-  const { name, email, password, isSubscribed } = req.body;
-
+  const { name, email, password, isSubscribed } = validation.data;
+  console.log(validation.data);
   const ExistingUser = await prisma.user.findUnique({
     where: {
       email: email,
@@ -32,7 +34,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      isSubscribed,
+      IsSubscribed: isSubscribed,
     },
   });
   res.status(201).json({
@@ -46,10 +48,10 @@ export const loginUser = async (req, res) => {
   if (!validation.success) {
     throw new UnauthorizedError("Invalid data");
   }
-  const { eamil, password } = validation.data;
+  const { email, password } = validation.data;
   const user = await prisma.user.findUnique({
     where: {
-      email: eamil,
+      email: email,
     },
   });
   if (!user) {
