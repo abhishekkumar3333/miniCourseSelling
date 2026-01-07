@@ -78,6 +78,20 @@ const LoginForm = () => {
               placeholder="••••••••"
             />
           </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input type="checkbox" />
+              <label className="ml-2 text-sm text-gray-700">Remember me</label>
+            </div>
+
+            <span
+              className="ml-4 text-sm text-gray-700 hover:underline"
+              onClick={() => navigate("/forget-password")}
+            >
+              forget-password
+            </span>
+          </div>
           {errorMessage.password && (
             <div className="text-red-600">{errorMessage.password}</div>
           )}

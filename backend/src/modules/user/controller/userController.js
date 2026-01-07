@@ -44,7 +44,7 @@ export const registerUser = async (req, res) => {
   await sendMail(
     email,
     "Welcome to Our Service",
-    `Hello ${name},\n\nThank you for registering at our service! your OTP is ${otp}. We're excited to have you on board.\n\nBest regards,${req.user.name}`
+    `Hello ${name},\n\nThank you for registering at our service! your OTP is ${otp}. We're excited to have you on board.\n\nBest regards, The Team`
   );
   res.status(201).json({
     message: "User registered successfully",
@@ -142,5 +142,42 @@ export const forgetPassword = async (req, res) => {
   );
   res.status(200).json({
     message: "Password reset OTP sent to your email",
+  });
+};
+
+export const resetPassword = async (req, res) => {
+  const { email, resetOtp, newPassword } = req.body;
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  console.log(user);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+  if (
+    (user.resetOtp?.toString().trim() || "") !==
+    (resetOtp?.toString().trim() || "")
+  ) {
+    throw new BadRequestError("Invalid OTP");
+  }
+  if (user.resetOtpExpiry < new Date()) {
+    throw new BadRequestError("OTP expired");
+  }
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  console.log(hashedPassword);
+  await prisma.user.update({
+    where: {
+      email: email,
+    },
+    data: {
+      password: hashedPassword,
+      resetOtp: null,
+      resetOtpExpiry: null,
+    },
+  });
+  res.status(200).json({
+    message: "Password reset successfully",
   });
 };
