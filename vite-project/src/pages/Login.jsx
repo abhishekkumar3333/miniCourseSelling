@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const LoginForm = () => {
-  const { login, loading, error } = useContext(AuthContext);
+  const { login, googleLogin, loading, error } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState({
     email: "",
@@ -104,6 +105,28 @@ const LoginForm = () => {
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
+
+        <div className="flex items-center justify-between mt-4">
+          <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
+          <div className="text-xs text-center text-gray-500 uppercase dark:text-gray-400">
+            or login with Google
+          </div>
+          <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              const result = await googleLogin(credentialResponse.credential);
+              if (result) {
+                navigate("/");
+              }
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
+        </div>
 
         <p className="text-sm text-center text-gray-600">
           Don't have an account?{" "}

@@ -1,14 +1,14 @@
 import React, { useContext, useState } from "react";
 import { Mail, ArrowLeft, KeyRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const { forgetPassword } = useContext(AuthContext);
-
+  const { forgetPassword, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     await forgetPassword(email);
@@ -45,10 +45,16 @@ const ForgotPassword = () => {
               <span className="font-medium text-gray-800">{email}</span>
             </p>
             <button
-              onClick={() => setIsSubmitted(false)}
-              className="text-indigo-600 font-semibold hover:underline"
+              onClick={() => navigate("/reset-password")}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-indigo-200 transition-all duration-200 mb-2"
             >
-              Didn't receive the email? Try again
+              Go to Reset Password
+            </button>
+            <button
+              onClick={() => navigate("/login")}
+              className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition-all duration-200"
+            >
+              Back to Login
             </button>
           </div>
         ) : (
@@ -91,7 +97,7 @@ const ForgotPassword = () => {
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-indigo-200 transition-all duration-200"
               >
-                Reset Password
+                {loading ? "Sending..." : "Send Reset Otp"}
               </button>
             </form>
 

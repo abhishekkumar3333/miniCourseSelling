@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import VerifyOtp from "./pages/verifyOtp.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
+import NewPassword from "./pages/NewPassword.jsx";
 
 const Layout = () => {
   const location = useLocation();
@@ -22,7 +23,8 @@ const Layout = () => {
     location.pathname === "/register" ||
     location.pathname === "/login" ||
     location.pathname === "/verify-otp" ||
-    location.pathname === "/forget-password";
+    location.pathname === "/forget-password" ||
+    location.pathname === "/reset-password";
   if (!user && !isAuthPage) {
     return <Navigate to="/login" replace />;
   }
@@ -34,6 +36,7 @@ const Layout = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/forget-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<NewPassword />} />
 
         <Route
           path="/"

@@ -37,9 +37,10 @@ const AuthContextProvider = ({ children }) => {
     try {
       const response = await api.post("/user/verify-email-otp", otpData);
       setUser(response.data);
-      setLoading(false);
     } catch (error) {
       setError(error?.response?.data?.message || "OTP verification failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,9 +51,12 @@ const AuthContextProvider = ({ children }) => {
       const response = await api.post("/user/login", credential);
       setUser(response.data);
       localStorage.setItem("authToken", response.data.token);
-      setLoading(false);
+      return response.data;
     } catch (err) {
       setError(err?.response?.data?.message || "Login failed");
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,7 +70,38 @@ const AuthContextProvider = ({ children }) => {
       setError(error?.response?.data?.message || "Forget password failed");
     }
   };
-  
+
+  const resetPassword = async (passwordData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/user/reset-password", passwordData);
+      setUser(response.data);
+    } catch (error) {
+      setError(error?.response?.data?.message || "Reset password failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const googleLogin = async (credential) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/google/google-login", {
+        Idtoken: credential,
+      });
+      setUser(response.data.user);
+      localStorage.setItem("authToken", response.data.token);
+      return response.data;
+    } catch (err) {
+      setError(err?.response?.data?.message || "Google Login failed");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -77,6 +112,8 @@ const AuthContextProvider = ({ children }) => {
         login,
         verifyOtp,
         forgetPassword,
+        resetPassword,
+        googleLogin,
       }}
     >
       {children}

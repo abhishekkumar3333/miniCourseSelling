@@ -120,6 +120,7 @@ export const forgetPassword = async (req, res) => {
       email: email,
     },
   });
+
   if (!user) {
     throw new NotFoundError("User not found");
   }
@@ -145,6 +146,44 @@ export const forgetPassword = async (req, res) => {
   });
 };
 
+// export const resetPassword = async (req, res) => {
+//   const { email, resetOtp, otp, newPassword } = req.body;
+//   const otpCode = resetOtp || otp;
+//   const user = await prisma.user.findUnique({
+//     where: {
+//       email: email,
+//     },
+//   });
+//   console.log(user);
+//   if (!user) {
+//     throw new NotFoundError("User not found");
+//   }
+//   if (
+//     (user.resetOtp?.toString().trim() || "") !==
+//     (otpCode?.toString().trim() || "")
+//   ) {
+//     throw new BadRequestError("Invalid OTP");
+//   }
+//   if (user.resetOtpExpiry < new Date()) {
+//     throw new BadRequestError("OTP expired");
+//   }
+//   const hashedPassword = await bcrypt.hash(newPassword, 10);
+//   console.log(hashedPassword);
+//   await prisma.user.update({
+//     where: {
+//       email: email,
+//     },
+//     data: {
+//       password: hashedPassword,
+//       resetOtp: null,
+//       resetOtpExpiry: null,
+//     },
+//   });
+//   res.status(200).json({
+//     message: "Password reset successfully",
+//   });
+// };
+
 export const resetPassword = async (req, res) => {
   const { email, resetOtp, newPassword } = req.body;
   const user = await prisma.user.findUnique({
@@ -156,17 +195,13 @@ export const resetPassword = async (req, res) => {
   if (!user) {
     throw new NotFoundError("User not found");
   }
-  if (
-    (user.resetOtp?.toString().trim() || "") !==
-    (resetOtp?.toString().trim() || "")
-  ) {
+  if (user.resetOtp !== resetOtp) {
     throw new BadRequestError("Invalid OTP");
   }
   if (user.resetOtpExpiry < new Date()) {
     throw new BadRequestError("OTP expired");
   }
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  console.log(hashedPassword);
   await prisma.user.update({
     where: {
       email: email,
