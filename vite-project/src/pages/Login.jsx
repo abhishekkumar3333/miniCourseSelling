@@ -106,13 +106,13 @@ const LoginForm = () => {
           </button>
         </form>
 
-        <div className="flex items-center justify-between mt-4">
+        {/* <div className="flex items-center justify-between mt-4">
           <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
           <div className="text-xs text-center text-gray-500 uppercase dark:text-gray-400">
             or login with Google
           </div>
           <span className="w-1/5 border-b dark:border-gray-600 lg:w-1/4"></span>
-        </div>
+        </div> */}
 
         <div className="flex justify-center mt-4">
           <GoogleLogin
