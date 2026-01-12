@@ -19,3 +19,11 @@ export const createCourse = async (req, res) => {
 
   return res.status(201).json(course);
 };
+
+export const getAllCourses = async (req, res) => {
+  const courses = await prisma.course.findMany();
+  return res.status(200).json({
+    message: "Courses retrieved successfully",
+    data: courses,
+  });
+};

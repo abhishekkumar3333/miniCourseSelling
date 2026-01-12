@@ -14,6 +14,7 @@ import {
 import VerifyOtp from "./pages/verifyOtp.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
 import NewPassword from "./pages/NewPassword.jsx";
+import AllCoursesPage from "./pages/AllCourses.jsx";
 
 const Layout = () => {
   const location = useLocation();
@@ -43,7 +44,7 @@ const Layout = () => {
           element={
             user ? (
               <div className="main-content">
-                <h1>Main Content</h1>
+                <AllCoursesPage />
               </div>
             ) : (
               <Navigate to="/login" replace />
