@@ -12,7 +12,7 @@ const AllCoursesPage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    navigate("/login"); 
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const AllCoursesPage = () => {
 
   // --- UI Sub-components ---
   const SkeletonCard = () => (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-4 animate-pulse">
+    <div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 bg-white rounded-xl border border-gray-100 p-5 space-y-4 animate-pulse">
       <div className="h-40 bg-gray-200 rounded-lg w-full"></div>
       <div className="h-6 bg-gray-200 rounded w-3/4"></div>
       <div className="h-4 bg-gray-200 rounded w-full"></div>
@@ -77,7 +77,7 @@ const AllCoursesPage = () => {
     <div className="min-h-screen bg-[#F8FAFC] pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -88,21 +88,23 @@ const AllCoursesPage = () => {
               </p>
             </div>
 
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search for courses..."
-                className="pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none w-full md:w-80"
-              />
-            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-3">
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search for courses..."
+                  className="pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none w-full md:w-80"
+                />
+              </div>
 
-            <button
-              className="bg-indigo-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+              <button
+                className="bg-indigo-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -110,7 +112,7 @@ const AllCoursesPage = () => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="flex flex-wrap gap-8 justify-center">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <SkeletonCard key={i} />
             ))}
@@ -126,13 +128,25 @@ const AllCoursesPage = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="flex flex-wrap gap-8 items-center justify-center">
             {courses.map((c) => (
               <div
                 key={c.id ?? c._id}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition"
+                className="
+                  w-full
+                  sm:w-1/2
+                  lg:w-1/3
+                  xl:w-1/8
+                  bg-white
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  overflow-hidden
+                  hover:shadow-xl
+                  transition
+                "
               >
-                <div className="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 relative">
+                <div className="relative h-40 bg-indigo-600">
                   <BookOpen className="absolute bottom-4 right-4 text-white/20 w-16 h-16" />
                 </div>
 

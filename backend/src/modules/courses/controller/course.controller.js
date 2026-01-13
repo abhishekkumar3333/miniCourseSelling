@@ -27,3 +27,5 @@ export const getAllCourses = async (req, res) => {
     data: courses,
   });
 };
+
+
