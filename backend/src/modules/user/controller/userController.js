@@ -216,3 +216,35 @@ export const resetPassword = async (req, res) => {
     message: "Password reset successfully",
   });
 };
+
+export const getAllUsers = async (req, res) => {
+  const users = await prisma.user.findMany();
+  res.status(200).json({
+    message: "Users fetched successfully",
+    users,
+  });
+};
+
+export const deleteUSer = async (req, res) => {
+  const { id } = req.params;
+  await prisma.user.delete({
+    where: {
+      id: id,
+    },
+  });
+  res.status(200).json({
+    message: "User deleted successfully",
+  });
+};
+
+export const getMyProfile = async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.user.id,
+    },
+  });
+  res.status(200).json({
+    message: "User fetched successfully",
+    user,
+  });
+};

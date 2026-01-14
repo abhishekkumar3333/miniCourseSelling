@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../utils/api.js";
-import { BookOpen, AlertCircle, Search, Layers } from "lucide-react";
+import useUserProfile from "../component/GetUSerProfile";
+import { BookOpen, AlertCircle, Search, Layers, Trash } from "lucide-react";
 
 const AllCoursesPage = () => {
-  const navigate = useNavigate();
-
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user = useUserProfile();
+  const [open, setOpen] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/login");
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
+    try {
+      await api.delete(`/course/delete-course/${id}`);
+      setCourses((prev) =>
+        prev.filter((course) => (course.id ?? course._id) !== id)
+      );
+    } catch (err) {
+      alert("Failed to delete course");
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -80,7 +88,7 @@ const AllCoursesPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              <h1 className="text-xl font-extrabold text-gray-700 sm:text-4xl">
                 Explore All Courses
               </h1>
               <p className="mt-3 text-lg text-gray-500">
@@ -97,19 +105,19 @@ const AllCoursesPage = () => {
                   className="pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none w-full md:w-80"
                 />
               </div>
-
-              <button
-                className="bg-indigo-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+              <div className="flex items-center gap-2 cursor-pointer">
+                <div
+                  className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center"
+                  onClick={() => setOpen(true)}
+                >
+                  {user?.name?.charAt(0).toUpperCase()}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {loading ? (
           <div className="flex flex-wrap gap-8 justify-center">
@@ -159,9 +167,17 @@ const AllCoursesPage = () => {
                     <span className="text-indigo-600 font-bold">
                       {c.price ? `$${c.price}` : "Free"}
                     </span>
-                    <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">
-                      View Details
-                    </button>
+                    <div className="flex gap-2">
+                      <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">
+                        View Details
+                      </button>
+                      <button
+                        onClick={() => handleDelete(c.id ?? c._id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,6 +185,24 @@ const AllCoursesPage = () => {
           </div>
         )}
       </div>
+      {open && user && (
+        <div className="fixed top-16 right-6 bg-white shadow-xl rounded-xl p-5 w-72">
+          <h3 className="font-semibold text-lg">{user.name}</h3>
+          <p className="text-sm text-gray-500">{user.email}</p>
+
+          <div className="mt-3 text-sm">
+            <p>Email: {user.email}</p>
+            <p>IsSubscribed: {user.IsSubscribed ? "Yes" : "No"}</p>
+          </div>
+
+          <button
+            onClick={() => setOpen(false)}
+            className="mt-4 w-full bg-gray-100 rounded-lg py-2"
+          >
+            Close
+          </button>
+        </div>
+      )}
     </div>
   );
 };

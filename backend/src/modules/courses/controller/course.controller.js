@@ -28,4 +28,15 @@ export const getAllCourses = async (req, res) => {
   });
 };
 
+export const deleteCourse = async (req, res) => {
+  const { id } = req.params;
+  await prisma.course.delete({
+    where: {
+      id: id,
+    },
+  });
+  return res.status(200).json({
+    message: "Course deleted successfully",
+  });
+};
 

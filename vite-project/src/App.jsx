@@ -15,6 +15,8 @@ import VerifyOtp from "./pages/verifyOtp.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
 import NewPassword from "./pages/NewPassword.jsx";
 import AllCoursesPage from "./pages/AllCourses.jsx";
+import AllUsers from "./pages/AllUsers.jsx";
+import DashboardLayout from "./component/DashboardLayout.jsx";
 
 const Layout = () => {
   const location = useLocation();
@@ -26,6 +28,7 @@ const Layout = () => {
     location.pathname === "/verify-otp" ||
     location.pathname === "/forget-password" ||
     location.pathname === "/reset-password";
+
   if (!user && !isAuthPage) {
     return <Navigate to="/login" replace />;
   }
@@ -39,18 +42,16 @@ const Layout = () => {
         <Route path="/forget-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<NewPassword />} />
 
+        {/* Protected Routes Wrapped in DashboardLayout */}
         <Route
-          path="/"
           element={
-            user ? (
-              <div className="main-content">
-                <AllCoursesPage />
-              </div>
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            user ? <DashboardLayout /> : <Navigate to="/login" replace />
           }
-        />
+        >
+          <Route path="/" element={<Navigate to="/courses" replace />} />
+          <Route path="/courses" element={<AllCoursesPage />} />
+          <Route path="/users" element={<AllUsers />} />
+        </Route>
       </Routes>
     </div>
   );
