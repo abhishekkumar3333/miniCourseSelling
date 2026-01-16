@@ -168,7 +168,12 @@ const AllCoursesPage = () => {
                       {c.price ? `$${c.price}` : "Free"}
                     </span>
                     <div className="flex gap-2">
-                      <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">
+                      <button
+                        onClick={() =>
+                          (window.location.href = `/course/${c.id ?? c._id}`)
+                        }
+                        className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition"
+                      >
                         View Details
                       </button>
                       <button
@@ -189,11 +194,6 @@ const AllCoursesPage = () => {
         <div className="fixed top-16 right-6 bg-white shadow-xl rounded-xl p-5 w-72">
           <h3 className="font-semibold text-lg">{user.name}</h3>
           <p className="text-sm text-gray-500">{user.email}</p>
-
-          <div className="mt-3 text-sm">
-            <p>Email: {user.email}</p>
-            <p>IsSubscribed: {user.IsSubscribed ? "Yes" : "No"}</p>
-          </div>
 
           <button
             onClick={() => setOpen(false)}

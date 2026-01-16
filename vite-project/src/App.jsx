@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./App.css";
 import RegisterForm from "./pages/register.jsx";
 import LoginForm from "./pages/Login.jsx";
-import { useContext } from "react";
 import { AuthContext } from "./context/authContext";
 import { Navigate } from "react-router-dom";
 import {
@@ -16,6 +15,9 @@ import ForgotPassword from "./pages/ForgetPassword.jsx";
 import NewPassword from "./pages/NewPassword.jsx";
 import AllCoursesPage from "./pages/AllCourses.jsx";
 import AllUsers from "./pages/AllUsers.jsx";
+import CreateLesson from "./pages/CreateLesson.jsx";
+import CreateModule from "./pages/CreateModule.jsx";
+import CourseDetails from "./pages/CourseDetails.jsx";
 import DashboardLayout from "./component/DashboardLayout.jsx";
 
 const Layout = () => {
@@ -50,6 +52,9 @@ const Layout = () => {
         >
           <Route path="/" element={<Navigate to="/courses" replace />} />
           <Route path="/courses" element={<AllCoursesPage />} />
+          <Route path="/course/:id" element={<CourseDetails />} />
+          <Route path="/create-lesson" element={<CreateLesson />} />
+          <Route path="/create-module" element={<CreateModule />} />
           <Route path="/users" element={<AllUsers />} />
         </Route>
       </Routes>

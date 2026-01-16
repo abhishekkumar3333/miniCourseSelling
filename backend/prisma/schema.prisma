@@ -29,10 +29,30 @@ model User {
 }
 
 model Course {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String
   price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  modules     Module[]
+  lessions    Lession[]
+}
+
+model Module {
+  id       String @id @default(uuid())
+  title    String
+  content  String
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Lession {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  topic       String
+  duration    Int?
+  courseId    String
+  course      Course @relation(fields: [courseId], references: [id])
 }

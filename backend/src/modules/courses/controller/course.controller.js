@@ -40,3 +40,28 @@ export const deleteCourse = async (req, res) => {
   });
 };
 
+export const getCourseById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const course = await prisma.course.findUnique({
+      where: { id },
+      include: {
+        modules: true,
+        lessions: true,
+      },
+    });
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: course,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
