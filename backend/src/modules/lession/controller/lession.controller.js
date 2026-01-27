@@ -10,7 +10,6 @@ export const createLession = async (req, res) => {
   const { courseId } = req.params;
   const { title, description, topic, duration } = validationResult.data;
 
-  // Ensure required fields for DB
   if (!topic || !description) {
     throw new BadRequestError("Topic and Description are required");
   }

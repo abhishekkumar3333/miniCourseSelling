@@ -37,6 +37,19 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [id]);
 
+  const handleEnroll = async () => {
+    try {
+      const response = await api.post(`/payment/create/${id}`, {});
+      if (response.data.success) {
+        alert("Enrollment successful!");
+        // Optionally navigate or refresh
+      }
+    } catch (error) {
+      console.error("Enrollment failed", error);
+      alert("Enrollment failed. Please try again.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -266,7 +279,10 @@ const CourseDetails = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-200">
+              <button
+                onClick={handleEnroll}
+                className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-200"
+              >
                 Enroll Now
               </button>
             </div>

@@ -56,3 +56,31 @@ model Lession {
   courseId    String
   course      Course @relation(fields: [courseId], references: [id])
 }
+
+model Payment {
+  id            String   @id @default(uuid())
+  userId        String
+  courseId      String
+  amount        Float
+  currency      String
+  status        String
+  paymentMode   String
+  orderId       String
+  transactionId String
+  createdAt     DateTime @default(now())
+}
+
+enum Status {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
+  paymentId  String
+  isActive   Boolean  @default(true)
+  enrolledAt DateTime @default(now())
+}
