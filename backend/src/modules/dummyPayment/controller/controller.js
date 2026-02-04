@@ -10,6 +10,7 @@ export const createDummyPayment = async (req, res) => {
     throw new BadRequestError("Invalid Data");
   }
   const orderId = "ORD_" + Date.now();
+  const transactionId = "TXN_" + Date.now();
   const course = await prisma.course.findUnique({
     where: {
       id: courseId,
@@ -29,6 +30,7 @@ export const createDummyPayment = async (req, res) => {
       courseId: courseId,
       userId: req.user.id,
       orderId: orderId,
+      transactionId: transactionId,
     },
   });
   return res.status(200).json({
@@ -37,4 +39,3 @@ export const createDummyPayment = async (req, res) => {
     data: payment,
   });
 };
-

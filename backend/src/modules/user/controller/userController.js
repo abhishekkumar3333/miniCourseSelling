@@ -44,7 +44,7 @@ export const registerUser = async (req, res) => {
   await sendMail(
     email,
     "Welcome to Our Service",
-    `Hello ${name},\n\nThank you for registering at our service! your OTP is ${otp}. We're excited to have you on board.\n\nBest regards, The Team`
+    `Hello ${name},\n\nThank you for registering at our service! your OTP is ${otp}. We're excited to have you on board.\n\nBest regards, The Team`,
   );
   res.status(201).json({
     message: "User registered successfully",
@@ -139,7 +139,7 @@ export const forgetPassword = async (req, res) => {
   await sendMail(
     email,
     "Password Reset Request",
-    `Hello ${user.name},\n\nYou have requested to reset your password. Your OTP for password reset is ${resetOtp}. This OTP is valid for 10 minutes.\n\nIf you did not request this, please ignore this email.\n\nBest regards,`
+    `Hello ${user.name},\n\nYou have requested to reset your password. Your OTP for password reset is ${resetOtp}. This OTP is valid for 10 minutes.\n\nIf you did not request this, please ignore this email.\n\nBest regards,`,
   );
   res.status(200).json({
     message: "Password reset OTP sent to your email",
@@ -247,4 +247,26 @@ export const getMyProfile = async (req, res) => {
     message: "User fetched successfully",
     user,
   });
+};
+
+import { sendNotification } from "../../../utils/firebase.js";
+
+export const sendTestNotification = async (req, res) => {
+  const { token, title, body } = req.body;
+  if (!token) {
+    throw new BadRequestError("FCM Token is required");
+  }
+
+  try {
+    await sendNotification(
+      token,
+      title || "Hello 👋",
+      body || "This is a test notification from the backend!",
+    );
+    res.status(200).json({ message: "Notification sent successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to send notification", error: error.message });
+  }
 };

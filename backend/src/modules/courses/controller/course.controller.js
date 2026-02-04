@@ -65,3 +65,5 @@ export const getCourseById = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+

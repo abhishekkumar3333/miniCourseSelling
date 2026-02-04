@@ -48,13 +48,13 @@ model Module {
 }
 
 model Lession {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String
-  topic       String
+  topicVideo  String?
   duration    Int?
   courseId    String
-  course      Course @relation(fields: [courseId], references: [id])
+  course      Course  @relation(fields: [courseId], references: [id])
 }
 
 model Payment {

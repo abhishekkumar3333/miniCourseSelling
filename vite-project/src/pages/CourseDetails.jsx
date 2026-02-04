@@ -38,12 +38,58 @@ const CourseDetails = () => {
   }, [id]);
 
   const handleEnroll = async () => {
+    const loadRazorpay = () =>
+      new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+
     try {
       const response = await api.post(`/payment/create/${id}`, {});
-      if (response.data.success) {
-        alert("Enrollment successful!");
-        // Optionally navigate or refresh
+      if (!response.data?.success) {
+        alert("Failed to create payment. Try again.");
+        return;
       }
+
+      const payment = response.data.data;
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        alert("Razorpay SDK failed to load. Check your connection.");
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_YOUR_KEY",
+        amount: Math.round((payment.amount || course.price || 0) * 100),
+        currency: payment.currency || "INR",
+        name: course.title,
+        description: "Course purchase",
+        order_id: payment.orderId,
+        handler: async function (razorpayResponse) {
+          try {
+            await api.post(`/payment/confirm`, {
+              orderId: payment.orderId,
+              razorpayResponse,
+            });
+            alert("Payment successful");
+            navigate("/courses");
+          } catch (err) {
+            console.error("Payment verification failed", err);
+            alert("Payment verification failed. Contact support.");
+          }
+        },
+        prefill: {
+          name: localStorage.getItem("userName") || "",
+          email: localStorage.getItem("userEmail") || "",
+        },
+        theme: { color: "#3b82f6" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
       console.error("Enrollment failed", error);
       alert("Enrollment failed. Please try again.");
@@ -272,7 +318,7 @@ const CourseDetails = () => {
                   <span className="font-bold text-gray-900">
                     {course.lessions?.reduce(
                       (acc, curr) => acc + (curr.duration || 0),
-                      0
+                      0,
                     ) || 0}{" "}
                     min
                   </span>

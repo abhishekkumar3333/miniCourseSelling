@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { requestForToken, onMessageListener } from "./firebase";
 import "./App.css";
 import RegisterForm from "./pages/register.jsx";
 import LoginForm from "./pages/Login.jsx";
@@ -30,6 +31,20 @@ const Layout = () => {
     location.pathname === "/verify-otp" ||
     location.pathname === "/forget-password" ||
     location.pathname === "/reset-password";
+
+  useEffect(() => {
+    requestForToken();
+
+    onMessageListener()
+      .then((payload) => {
+        console.log("Message received: ", payload);
+        // Customize how you want to show the notification in the foreground
+        alert(
+          `New message: ${payload.notification?.title} - ${payload.notification?.body}`,
+        );
+      })
+      .catch((err) => console.log("failed: ", err));
+  }, []);
 
   if (!user && !isAuthPage) {
     return <Navigate to="/login" replace />;
