@@ -1,6 +1,7 @@
 import prisma from "../../../utils/prisma.js";
 import { createCourseSchema } from "../validators/course.validation.js";
 import { BadRequestError } from "../../../core/errors/appErrors.js";
+import jwt from "jsonwebtoken";
 
 export const createCourse = async (req, res) => {
   const validation = createCourseSchema.safeParse(req.body);
@@ -55,9 +56,29 @@ export const getCourseById = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
+    let isEnrolled = false;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded) {
+          const enrollment = await prisma.enrollment.findFirst({
+            where: {
+              userId: decoded.id,
+              courseId: id,
+            },
+          });
+          if (enrollment) isEnrolled = true;
+        }
+      } catch (e) {
+        // Token invalid, ignore enrollment check
+      }
+    }
+
     return res.status(200).json({
       success: true,
-      data: course,
+      data: { ...course, isEnrolled },
     });
   } catch (error) {
     return res
@@ -65,5 +86,3 @@ export const getCourseById = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
-
-

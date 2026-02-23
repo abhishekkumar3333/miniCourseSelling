@@ -38,15 +38,6 @@ const CourseDetails = () => {
   }, [id]);
 
   const handleEnroll = async () => {
-    const loadRazorpay = () =>
-      new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.body.appendChild(script);
-      });
-
     try {
       const response = await api.post(`/payment/create/${id}`, {});
       if (!response.data?.success) {
@@ -55,6 +46,33 @@ const CourseDetails = () => {
       }
 
       const payment = response.data.data;
+
+      // Check if it's a dummy order (prefixed with ORD_ in our backend)
+      if (payment.orderId && payment.orderId.startsWith("ORD_")) {
+        console.log("Dummy payment detected, bypassing Razorpay SDK");
+        try {
+          await api.post(`/payment/confirm`, {
+            orderId: payment.orderId,
+          });
+          alert("Payment successful (Demo Mode)");
+          navigate("/courses");
+          return;
+        } catch (err) {
+          console.error("Dummy payment verification failed", err);
+          alert("Enrollment failed. Please try again.");
+          return;
+        }
+      }
+
+      const loadRazorpay = () =>
+        new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.body.appendChild(script);
+        });
+
       const loaded = await loadRazorpay();
       if (!loaded) {
         alert("Razorpay SDK failed to load. Check your connection.");
@@ -327,9 +345,14 @@ const CourseDetails = () => {
 
               <button
                 onClick={handleEnroll}
-                className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-200"
+                disabled={course.isEnrolled}
+                className={`w-full mt-6 font-bold py-3 rounded-xl transition-all shadow-lg ${
+                  course.isEnrolled
+                    ? "bg-green-600 text-white cursor-not-allowed shadow-green-200"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200"
+                }`}
               >
-                Enroll Now
+                {course.isEnrolled ? "Enrolled" : "Enroll Now"}
               </button>
             </div>
           </div>
